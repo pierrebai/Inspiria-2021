@@ -8,7 +8,20 @@ streams =[
     '',
 ]
 
-streams[1] = open('hack8.encrypted.txt', 'rb').read()
+def text_to_int(text):
+    i = 0
+    data = []
+    while i < len(text):
+        if i+3 < len(text) and text[i] == '\\' and text[i+1] == 'x':
+            data.append(int(text[i+2:i+4], 16))
+            i += 4
+        else:
+            data.append(ord(text[i]))
+            i += 1
+    return data
+
+
+streams[1] = text_to_int(open('hack8.encrypted.txt', 'r', encoding='utf8', errors='surrogatepass').read())
 print(streams[1])
 streams[2] = open('hack8.key.txt', 'rb').read()
 print(streams[2])
@@ -86,14 +99,14 @@ def jmpz(a, b, c):
     global registers
     if registers[a]:
         return
-    instruction = b - 1
+    instruction = b
 
 def jmpnz(a, b, c):
     global instruction
     global registers
     if not registers[a]:
         return
-    instruction = b - 1
+    instruction = b
 
 def rdr(a, b, c):
     global registers
@@ -105,7 +118,7 @@ def rdr(a, b, c):
 def wrr(a, b, c):
     global registers
     global streams
-    print(chr(registers[a]), sep='')
+    print(chr(registers[a]), end='')
 
 opcodes = [
     addr,
