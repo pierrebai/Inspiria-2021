@@ -12,7 +12,7 @@ me donnait exactement le même résultat que la version Python! Étrange.
 ## L'investigation
 
 J'ai donc cloné le repo git et compilé la solution officielle, en C#.
-Et celli-ci foncitonnait parfaitement! J'ai comparé le code de la solution
+Et celle-ci fonctionnait parfaitement! J'ai comparé le code de la solution
 C# et il était 100% équivalent à mes solutions!
 
 J'ai donc roulé ma version Python et la solution C# pas-à-pas pour voir
@@ -24,17 +24,25 @@ Le noeud du problème est l'affirmation du problème que les fichiers d'entrés
 sont encodés en ASCII et doivent être lus ainsi. Or le programme C# lit les
 fichiers d'entrées en mode texte en Unicode! (Plus précisément, UTF-8.)
 Heureusement, l'encodage Unicode correspond à 100% à ASCII pour les codes
-0-127, donc pour le texte normal. Mais... pour ce qui est des codes au-delà,
-et en particulier pour les valeurs 8-bits entre 128-255.
+0-127, donc pour le texte normal. Pour ce qui est des codes au-delà, pour
+les valeurs 8-bits entre 128-255, Unicode diffère d'ASCII.
 
-Mais il y avait un autre problème qui rendait la chose encore plus
+Ceci n'aurait pas été trop mal si on aurait pu lire les fichiers en mode
+Unicode, mais il y avait un autre problème qui rendait la chose plus
 complexe. En UTF-8, les quand l'encodage d'un caractère commence par
 un byte entre 128-255, il lit plusieurs byte, mais certaines séquences
 sont illégales. Or le fichier d'entrée contenait plusieurs séquences
-illégales. Or, le langage C# traite les séquences illégales différemment
-que C++ et Python. Donc, même si on aurait lu le fichier en mode texte
-avec l'encodage UTF-8, on ne pouvait pas avoir le même résultat.
-Il fallait écrire la solution en C#.
+illégales.
+
+Or, le langage C# traite les séquences illégales différemment que C++
+et Python. Entre-autre, il génère des caractères invalide, non affichable.
+Il semble même lire plusieurs byte, se rend compte que ce n'est pas une
+séquence Unicode et fournit les bytes en ordre inverse... ou quelque
+chose du genre.
+
+Donc, même si on aurait lu le fichier en mode texte avec l'encodage
+UTF-8, on ne pouvait pas avoir le même résultat. Il fallait écrire
+la solution en C#.
 
 ## La validation
 
